@@ -1,0 +1,20 @@
+stages:
+  - build
+
+variables:
+  NODE_OPTIONS: "--max_old_space_size=4096"
+
+nuxt_build:
+  stage: build
+  image: node:20-alpine
+  cache:
+    paths:
+      - node_modules/
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    name: "nuxt-output"
+    paths:
+      - .output/
+    expire_in: 1 day
