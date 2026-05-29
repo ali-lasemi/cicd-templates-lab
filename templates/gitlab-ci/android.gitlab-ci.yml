@@ -1,0 +1,19 @@
+stages:
+  - test
+  - build
+
+android_test:
+  stage: test
+  image: gradle:8.7-jdk17
+  script:
+    - ./gradlew testDebugUnitTest
+
+android_build:
+  stage: build
+  image: gradle:8.7-jdk17
+  script:
+    - ./gradlew assembleDebug
+  artifacts:
+    paths:
+      - app/build/outputs/apk/debug/*.apk
+    expire_in: 1 day
