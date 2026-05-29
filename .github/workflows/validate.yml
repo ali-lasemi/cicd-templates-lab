@@ -1,0 +1,27 @@
+name: Validate Repository
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    name: Validate templates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check required files
+        run: |
+          test -f README.md
+          test -f ROADMAP.md
+          test -f CHANGELOG.md
+          test -f templates/github-actions/node.yml
+          test -f templates/github-actions/nuxt.yml
+          test -f templates/github-actions/android.yml
+          test -f templates/gitlab-ci/node.gitlab-ci.yml
+          test -f templates/gitlab-ci/nuxt.gitlab-ci.yml
+          test -f templates/gitlab-ci/android.gitlab-ci.yml
+          test -f templates/docker/docker-build.yml
