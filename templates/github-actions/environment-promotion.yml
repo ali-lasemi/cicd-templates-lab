@@ -1,0 +1,46 @@
+name: Environment Promotion
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_environment:
+        description: "Source environment"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - development
+          - staging
+
+      target_environment:
+        description: "Target environment"
+        required: true
+        default: "production"
+        type: choice
+        options:
+          - staging
+          - production
+
+      version:
+        description: "Application version or image tag to promote"
+        required: true
+        type: string
+
+jobs:
+  promote:
+    name: Promote Release
+    runs-on: ubuntu-latest
+
+    environment: ${{ inputs.target_environment }}
+
+    steps:
+      - name: Validate promotion request
+        run: |
+          echo "Promoting version: ${{ inputs.version }}"
+          echo "From: ${{ inputs.source_environment }}"
+          echo "To: ${{ inputs.target_environment }}"
+
+      - name: Promotion placeholder
+        run: |
+          echo "This is a reusable promotion workflow template."
+          echo "Add deployment logic for your infrastructure here."
