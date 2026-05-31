@@ -13,6 +13,7 @@
 - [x] Docker build workflow
 - [x] CI/CD documentation
 - [x] Validation workflow
+- [x] Docker registry publishing workflow
 
 ---
 
