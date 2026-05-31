@@ -1,0 +1,56 @@
+name: Blue Green Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_color:
+        description: "Target deployment color"
+        required: true
+        type: choice
+        options:
+          - blue
+          - green
+
+jobs:
+  deploy:
+    name: Blue Green Deploy
+    runs-on: ubuntu-latest
+
+    environment: production
+
+    steps:
+      - name: Validate target color
+        run: |
+          echo "Deploying to ${{ inputs.target_color }} environment"
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -Eeuo pipefail
+
+            TARGET_COLOR="${{ inputs.target_color }}"
+            APP_BASE_DIR="${{ secrets.APP_BASE_DIR }}"
+            SERVICE_NAME="app-${TARGET_COLOR}"
+            HEALTHCHECK_URL="${{ secrets.HEALTHCHECK_BASE_URL }}/${TARGET_COLOR}/health"
+
+            echo "Deploying to ${TARGET_COLOR}"
+
+            cd "$APP_BASE_DIR/$TARGET_COLOR"
+
+            git pull origin main
+            npm ci
+            npm run build
+
+            sudo systemctl restart "$SERVICE_NAME"
+
+            sleep 5
+
+            curl -f "$HEALTHCHECK_URL"
+
+            echo "Blue-green deployment target is healthy."
+            echo "Traffic switching should be handled by reverse proxy configuration."
