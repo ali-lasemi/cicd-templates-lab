@@ -1,0 +1,41 @@
+name: SSH Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy over SSH
+    runs-on: ubuntu-latest
+
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy application
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            set -Eeuo pipefail
+
+            cd ${{ secrets.APP_PATH }}
+
+            git pull origin main
+
+            npm ci
+            npm run build
+
+            sudo systemctl restart ${{ secrets.SERVICE_NAME }}
+
+            sleep 5
+
+            curl -f ${{ secrets.HEALTHCHECK_URL }}
