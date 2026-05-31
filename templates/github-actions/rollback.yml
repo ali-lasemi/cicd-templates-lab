@@ -1,0 +1,47 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_path:
+        description: "Release path or version to rollback to"
+        required: true
+        type: string
+
+jobs:
+  rollback:
+    name: Rollback over SSH
+    runs-on: ubuntu-latest
+
+    environment: production
+
+    steps:
+      - name: Execute rollback
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -Eeuo pipefail
+
+            APP_DIR="${{ secrets.APP_DIR }}"
+            SERVICE_NAME="${{ secrets.SERVICE_NAME }}"
+            HEALTHCHECK_URL="${{ secrets.HEALTHCHECK_URL }}"
+            RELEASE_PATH="${{ inputs.release_path }}"
+
+            if [ ! -d "$RELEASE_PATH" ]; then
+              echo "Release path not found: $RELEASE_PATH"
+              exit 1
+            fi
+
+            ln -sfn "$RELEASE_PATH" "$APP_DIR/current"
+
+            sudo systemctl restart "$SERVICE_NAME"
+
+            sleep 5
+
+            curl -f "$HEALTHCHECK_URL"
+
+            echo "Rollback completed successfully."
