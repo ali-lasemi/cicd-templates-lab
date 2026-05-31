@@ -11,26 +11,20 @@
 - [x] GitLab CI Nuxt template
 - [x] GitLab CI Android template
 - [x] Docker build workflow
+- [x] SSH deployment workflow
+- [x] Rollback workflow
+- [x] Docker registry publishing workflow
+- [x] Release tagging workflow
+- [x] Environment promotion workflow
+- [x] Blue-green deployment example
 - [x] CI/CD documentation
 - [x] Validation workflow
-- [x] Docker registry publishing workflow
 
 ---
 
-## Phase 2 — Deployment Workflows
+## Phase 2 — Advanced Delivery
 
-- [ ] SSH deployment template
-- [ ] Docker registry push workflow
-- [ ] Environment-based deployments
-- [ ] Rollback workflow
-- [ ] Release tagging workflow
-
----
-
-## Phase 3 — Advanced Delivery
-
-- [ ] Kubernetes deployment workflow
-- [ ] Blue/green deployment example
 - [ ] Canary deployment example
+- [ ] Kubernetes deployment workflow
 - [ ] Security scanning integration
 - [ ] Multi-environment pipeline examples
